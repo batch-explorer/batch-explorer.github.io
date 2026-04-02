@@ -6,12 +6,15 @@
 <script lang="ts">
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
   import { Badge } from '$lib/components/ui/badge'
+  import { Button } from '$lib/components/ui/button'
   import HexDisplay from '$lib/components/hex-display.svelte'
   import NumberDisplay from '$lib/components/number-display.svelte'
   import { GNOSISSCAN_BASE_URL } from '$lib/constants'
   import { bzzPriceStore } from '$lib/stores/bzz-price.svelte'
   import type { BatchDetail } from '$lib/types'
   import { formatBzz, formatExpiry, formatStorageCapacity, formatUsd } from '$lib/format'
+
+  const BEEPORT_TOPUP_URL = 'https://beeport.eth.limo/?topup='
 
   interface Props {
     batch: BatchDetail
@@ -55,6 +58,14 @@
       <Badge variant={batch.immutableFlag ? 'secondary' : 'outline'}>
         {batch.immutableFlag ? 'Immutable' : 'Mutable'}
       </Badge>
+      <a
+        href="{BEEPORT_TOPUP_URL}{batch.batchId.slice(2)}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="ml-auto"
+      >
+        <Button variant="outline" size="sm">Top up</Button>
+      </a>
     </div>
   </CardHeader>
   <CardContent>
