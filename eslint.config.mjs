@@ -8,13 +8,6 @@ import notice from 'eslint-plugin-notice'
 import globals from 'globals'
 import svelteParser from 'svelte-eslint-parser'
 import typescriptEslint from 'typescript-eslint'
-import svelteLicenseHeader from '../eslint-rule-svelte-license-header.js'
-
-const svelteLicensePlugin = {
-  rules: {
-    'license-header': svelteLicenseHeader,
-  },
-}
 
 export default typescriptEslint.config(
   js.configs.recommended,
@@ -56,10 +49,6 @@ export default typescriptEslint.config(
         parser: typescriptEslint.parser,
         extraFileExtensions: ['.svelte'],
       },
-    },
-    plugins: { 'svelte-license': svelteLicensePlugin },
-    rules: {
-      'svelte-license/license-header': 'error',
     },
   },
   {
