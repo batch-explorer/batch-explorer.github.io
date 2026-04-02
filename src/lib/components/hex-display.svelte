@@ -7,15 +7,20 @@
   interface Props {
     value: string
     truncate?: boolean
+    showEnd?: boolean
     href?: string
   }
 
-  let { value, truncate = true, href }: Props = $props()
+  let { value, truncate = true, showEnd = true, href }: Props = $props()
 
   let copied = $state(false)
 
   const displayValue = $derived(
-    truncate && value.length > 16 ? `${value.slice(0, 10)}...${value.slice(-6)}` : value,
+    truncate && value.length > 16
+      ? showEnd
+        ? `${value.slice(0, 10)}...${value.slice(-6)}`
+        : `${value.slice(0, 10)}…`
+      : value,
   )
 
   async function copy() {
@@ -29,7 +34,6 @@
 
 <span class="inline-flex items-center gap-1 font-mono text-sm">
   {#if href}
-    <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- dynamic hrefs with base path -->
     <a {href} class="text-primary hover:underline">{displayValue}</a>
   {:else}
     <span title={value}>{displayValue}</span>

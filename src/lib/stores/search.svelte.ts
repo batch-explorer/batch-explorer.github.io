@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { goto } from '$app/navigation'
-import { base } from '$app/paths'
+import { resolveRoute } from '$app/paths'
 import { BATCH_ID_LENGTH, TX_HASH_LENGTH } from '$lib/constants'
 
 type SearchType = 'batch' | 'tx' | undefined
@@ -40,11 +40,9 @@ export const searchStore = {
 
     if (type === 'batch') {
       const batchId = trimmed.startsWith('0x') ? trimmed.slice(2) : trimmed
-      // eslint-disable-next-line svelte/no-navigation-without-resolve -- dynamic route with base path
-      await goto(`${base}/batch/${batchId}`)
+      await goto(resolveRoute('/batch/[id]', { id: batchId }))
     } else if (type === 'tx') {
-      // eslint-disable-next-line svelte/no-navigation-without-resolve -- dynamic route with base path
-      await goto(`${base}/tx/${trimmed}`)
+      await goto(resolveRoute('/tx/[hash]', { hash: trimmed }))
     }
   },
 }

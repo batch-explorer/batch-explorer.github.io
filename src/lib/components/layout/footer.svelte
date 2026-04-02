@@ -32,7 +32,7 @@
         {@const balanceBzz = Number(networkStatsStore.contractBalance / PLUR_PER_BZZ)}
         {@const balanceUsd = bzzPriceStore.price ? balanceBzz * bzzPriceStore.price : undefined}
         <span>
-          Contract balance: {balanceBzz.toLocaleString()} BZZ
+          Contract balance TVL: {balanceBzz.toLocaleString()} BZZ
           {#if balanceUsd !== undefined}
             ({balanceUsd.toLocaleString(undefined, { maximumFractionDigits: 0 })} USD)
           {/if}
@@ -43,7 +43,7 @@
         <a
           href={`${GNOSISSCAN_BASE_URL}/address/${POSTAGE_STAMP_ADDRESS}`}
           target="_blank"
-          rel="noopener noreferrer"
+          rel="noopener noreferrer external"
           class="hover:text-foreground"
         >
           {POSTAGE_STAMP_ADDRESS}
@@ -51,11 +51,10 @@
       </span>
     </div>
     <div class="flex items-center gap-4">
-      <!-- eslint-disable svelte/no-navigation-without-resolve -- external links -->
       <a
         href={GNOSISSCAN_BASE_URL}
         target="_blank"
-        rel="noopener noreferrer"
+        rel="noopener noreferrer external"
         class="hover:text-foreground"
       >
         Gnosisscan

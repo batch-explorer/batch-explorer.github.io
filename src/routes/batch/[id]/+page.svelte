@@ -5,11 +5,10 @@
 
 <script lang="ts">
   import { page } from '$app/stores'
-  import { base } from '$app/paths'
+  import { resolveRoute } from '$app/paths'
   import { onMount } from 'svelte'
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
   import { Button } from '$lib/components/ui/button'
-  import { Badge } from '$lib/components/ui/badge'
   import HexDisplay from '$lib/components/hex-display.svelte'
   import BatchSummary from '$lib/components/batch-summary.svelte'
   import LoadingSpinner from '$lib/components/loading-spinner.svelte'
@@ -17,13 +16,6 @@
   import { GNOSISSCAN_BASE_URL } from '$lib/constants'
   import type { BatchCreatedArgs, BatchTopUpArgs, BatchDepthIncreaseArgs } from '$lib/types'
   import EventBadge from '$lib/components/event-badge.svelte'
-
-  const VARIANT_MAP = {
-    BatchCreated: 'success',
-    BatchTopUp: 'default',
-    BatchDepthIncrease: 'warning',
-    PriceUpdate: 'secondary',
-  } as const
 
   let batchId = $derived($page.params.id ?? '')
 
@@ -37,10 +29,11 @@
   <title>Batch {batchId.slice(0, 12)}... - Batch Explorer</title>
 </svelte:head>
 
-<!-- eslint-disable svelte/no-navigation-without-resolve -- dynamic routes with base path -->
 <div class="space-y-6">
   <div class="flex items-center gap-2">
-    <a href="{base}/" class="text-sm text-muted-foreground hover:text-foreground">&larr; Back</a>
+    <a href={resolveRoute('/')} class="text-sm text-muted-foreground hover:text-foreground"
+      >&larr; Back</a
+    >
   </div>
 
   {#if batchDetailStore.loading}
@@ -69,7 +62,7 @@
         {#each batchDetailStore.batch.events as event, i (`${event.transactionHash}-${event.logIndex}`)}
           <div class="flex items-start gap-4 border-b px-6 py-4 last:border-0">
             <div class="flex flex-col items-center gap-1">
-              <EventBadge {event}/>
+              <EventBadge {event} />
               <span class="text-xs text-muted-foreground">#{i + 1}</span>
             </div>
 
@@ -133,7 +126,7 @@
                 <span class="text-muted-foreground">Transaction:</span>
                 <HexDisplay
                   value={event.transactionHash}
-                  href="{base}/tx/{event.transactionHash}"
+                  href={resolveRoute('/tx/[hash]', { hash: event.transactionHash })}
                 />
               </div>
             </div>

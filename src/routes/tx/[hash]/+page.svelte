@@ -5,7 +5,7 @@
 
 <script lang="ts">
   import { page } from '$app/stores'
-  import { base } from '$app/paths'
+  import { resolveRoute } from '$app/paths'
   import { onMount } from 'svelte'
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card'
   import { Badge } from '$lib/components/ui/badge'
@@ -51,10 +51,11 @@
   <title>Tx {txHash.slice(0, 12)}... - Batch Explorer</title>
 </svelte:head>
 
-<!-- eslint-disable svelte/no-navigation-without-resolve -- dynamic routes and external links -->
 <div class="space-y-6">
   <div class="flex items-center gap-2">
-    <a href="{base}/" class="text-sm text-muted-foreground hover:text-foreground">&larr; Back</a>
+    <a href={resolveRoute('/')} class="text-sm text-muted-foreground hover:text-foreground"
+      >&larr; Back</a
+    >
   </div>
 
   {#if loading}
@@ -147,7 +148,7 @@
         <CardContent class="p-0">
           {#each txDetail.events as event (`${event.transactionHash}-${event.logIndex}`)}
             <div class="flex items-start gap-4 border-b px-6 py-4 last:border-0">
-              <EventBadge {event}/>
+              <EventBadge {event} />
 
               <div class="flex-1 space-y-1 text-sm">
                 {#if event.eventName === 'BatchCreated'}
@@ -156,7 +157,7 @@
                     <span class="text-muted-foreground">Batch:</span>
                     <HexDisplay
                       value={args.batchId.slice(2)}
-                      href="{base}/batch/{args.batchId.slice(2)}"
+                      href={resolveRoute('/batch/[id]', { id: args.batchId.slice(2) })}
                     />
                   </div>
                   <div>
@@ -178,7 +179,7 @@
                     <span class="text-muted-foreground">Batch:</span>
                     <HexDisplay
                       value={args.batchId.slice(2)}
-                      href="{base}/batch/{args.batchId.slice(2)}"
+                      href={resolveRoute('/batch/[id]', { id: args.batchId.slice(2) })}
                     />
                   </div>
                   <div>
@@ -191,7 +192,7 @@
                     <span class="text-muted-foreground">Batch:</span>
                     <HexDisplay
                       value={args.batchId.slice(2)}
-                      href="{base}/batch/{args.batchId.slice(2)}"
+                      href={resolveRoute('/batch/[id]', { id: args.batchId.slice(2) })}
                     />
                   </div>
                   <div>

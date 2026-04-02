@@ -4,8 +4,7 @@
 -->
 
 <script lang="ts">
-  import { base } from '$app/paths'
-  import { Badge } from '$lib/components/ui/badge'
+  import { resolveRoute } from '$app/paths'
   import HexDisplay from '$lib/components/hex-display.svelte'
   import { GNOSISSCAN_BASE_URL } from '$lib/constants'
   import type {
@@ -17,18 +16,22 @@
   } from '$lib/types'
   import { formatBzz, formatStorageCapacity } from '$lib/format'
   import EventBadge from './event-badge.svelte'
+  import { networkStatsStore } from '$lib/stores/network-stats.svelte'
 
   interface Props {
     event: PostageEvent
   }
 
   let { event }: Props = $props()
+  let batchDepth = $state<number | undefined>(undefined)
 
-  function formatAmount(value: bigint): string {
-    const str = value.toString()
-    if (str.length <= 16) return str
-    return `${str.slice(0, 6)}...${str.slice(-4)}`
-  }
+  // Track batch depth when we see a BatchCreated event
+  $effect(() => {
+    if (event.eventName === 'BatchCreated') {
+      const args = event.args as BatchCreatedArgs
+      batchDepth = args.depth
+    }
+  })
 
   function getBatchId(event: PostageEvent): string | undefined {
     if (event.eventName === 'PriceUpdate') return undefined
@@ -36,20 +39,77 @@
     return args.batchId.slice(2)
   }
 
+  function calculateBatchDuration(depth: number, totalAmount: bigint): string {
+    // Calculate approximate duration based on depth and amount
+    // This is a simplified calculation - in reality it depends on usage
+    // For display purposes, we'll show an estimate based on typical usage
+
+    const chunks = 2 ** depth
+    const storageGB = (chunks * 4096) / (1024 * 1024 * 1024)
+
+    // Use network stats price if available, otherwise use typical price
+    const pricePerGBPerMonth = networkStatsStore.stats?.pricePerGBPerMonth ?? 0.1
+    const bzzAmount = Number(totalAmount) / Number(10n ** 16n) // Convert PLUR to BZZ
+
+    const months = bzzAmount / (storageGB * pricePerGBPerMonth)
+    const days = Math.round(months * 30)
+
+    if (days === 1) return '1 day'
+    return `${days} days`
+  }
+
+  function calculateTopUpDuration(topupAmount: bigint): string {
+    // Calculate additional duration from top-up amount
+    // Use the tracked batch depth, or fallback to typical depth (16)
+    const depth = batchDepth ?? 16
+
+    const chunks = 2 ** depth
+    const storageGB = (chunks * 4096) / (1024 * 1024 * 1024)
+
+    // Use network stats price if available, otherwise use typical price
+    const pricePerGBPerMonth = networkStatsStore.stats?.pricePerGBPerMonth ?? 0.1
+    const bzzAmount = Number(topupAmount) / Number(10n ** 16n) // Convert PLUR to BZZ
+
+    const months = bzzAmount / (storageGB * pricePerGBPerMonth)
+    const days = Math.round(months * 30)
+
+    if (days === 1) return '1 day'
+    return `${days} days`
+  }
+
+  function formatRelativeTime(date: Date | undefined): string {
+    if (!date) return 'Unknown'
+
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffMinutes = Math.floor(diffMs / (1000 * 60))
+    const diffHours = Math.floor(diffMinutes / 60)
+    const diffDays = Math.floor(diffHours / 24)
+
+    if (diffMinutes < 1) return 'just now'
+    if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes === 1 ? '' : 's'} ago`
+    if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`
+    if (diffDays < 30) return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`
+
+    return date.toLocaleDateString()
+  }
+
   function getDetail(event: PostageEvent): string {
     switch (event.eventName) {
       case 'BatchCreated': {
         const args = event.args as BatchCreatedArgs
-        // return `depth: ${args.depth}, amount: ${formatAmount(args.totalAmount)}`
-        return `${formatBzz(args.totalAmount)} BZZ, ${formatStorageCapacity(args.depth)}`
+        const duration = calculateBatchDuration(args.depth, args.totalAmount)
+        const baseDetail = `${formatStorageCapacity(args.depth)} for ${duration}, ${formatBzz(args.totalAmount)} BZZ`
+        return baseDetail
       }
       case 'BatchTopUp': {
         const args = event.args as BatchTopUpArgs
-        return `topup: ${formatAmount(args.topupAmount)}`
+        const duration = calculateTopUpDuration(args.topupAmount)
+        return `adds ${duration}, ${formatBzz(args.topupAmount)} BZZ`
       }
       case 'BatchDepthIncrease': {
         const args = event.args as BatchDepthIncreaseArgs
-        return `new depth: ${args.newDepth}`
+        return `increase capacity to ${formatStorageCapacity(args.newDepth)}`
       }
       case 'PriceUpdate': {
         const args = event.args as PriceUpdateArgs
@@ -62,27 +122,18 @@
   const detail = $derived(getDetail(event))
 </script>
 
-<!-- eslint-disable svelte/no-navigation-without-resolve -- external links and dynamic routes with base path -->
 <div
-  class="grid grid-cols-[8rem_1fr_1fr_1fr_6.5rem_11rem] items-center gap-4 border-b px-4 py-3 text-sm hover:bg-muted/50 transition-colors"
+  class="grid grid-cols-[11rem_8rem_6.5rem_1fr_2fr_1fr] items-center gap-4 border-b px-4 py-3 text-sm hover:bg-muted/50 transition-colors"
 >
-  <EventBadge {event}/>
-
-  <div class="min-w-0">
-    {#if batchId}
-      <HexDisplay value={batchId} href="{base}/batch/{batchId}" />
-    {:else}
-      <span class="text-muted-foreground">-</span>
-    {/if}
+  <div>
+    <HexDisplay
+      value={event.transactionHash}
+      showEnd={false}
+      href={resolveRoute('/tx/[hash]', { hash: event.transactionHash })}
+    />
   </div>
 
-  <div class="text-muted-foreground truncate">
-    {detail}
-  </div>
-
-  <div class="text-muted-foreground truncate">
-    {event.blockTime?.toLocaleString()}
-  </div>
+  <EventBadge {event} />
 
   <div class="text-muted-foreground text-xs">
     <a
@@ -95,7 +146,23 @@
     </a>
   </div>
 
-  <div>
-    <HexDisplay value={event.transactionHash} href="{base}/tx/{event.transactionHash}" />
+  <div class="text-muted-foreground truncate" title={event.blockTime?.toLocaleString()}>
+    {formatRelativeTime(event.blockTime)}
+  </div>
+
+  <div class="text-muted-foreground truncate">
+    {detail}
+  </div>
+
+  <div class="min-w-0">
+    {#if batchId}
+      <HexDisplay
+        value={batchId}
+        showEnd={false}
+        href={resolveRoute('/batch/[id]', { id: batchId })}
+      />
+    {:else}
+      <span class="text-muted-foreground">-</span>
+    {/if}
   </div>
 </div>

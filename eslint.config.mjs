@@ -23,6 +23,11 @@ export default typescriptEslint.config(
   eslintConfigPrettier,
   ...eslintPluginSvelte.configs['flat/prettier'],
   {
+    rules: {
+      'svelte/no-navigation-without-resolve': 'off',
+    },
+  },
+  {
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',

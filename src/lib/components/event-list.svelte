@@ -38,14 +38,14 @@
   </CardHeader>
   <CardContent class="p-0">
     <div
-      class="grid grid-cols-[9.5rem_1fr_1fr_1fr_6.5rem_11rem] gap-4 border-b bg-muted/50 px-4 py-2 text-xs font-medium text-muted-foreground"
+      class="grid grid-cols-[11rem_8rem_6.5rem_1fr_2fr_1fr] gap-4 border-b bg-muted/50 px-4 py-2 text-xs font-medium text-muted-foreground"
     >
-      <span>Event</span>
-      <span>Batch ID</span>
-      <span>Details</span>
-      <span>Date</span>
-      <span>Block</span>
       <span>Tx Hash</span>
+      <span>Event</span>
+      <span>Block</span>
+      <span>Age</span>
+      <span>Details</span>
+      <span>Batch ID</span>
     </div>
 
     {#if eventsStore.events.length === 0 && !eventsStore.loading}

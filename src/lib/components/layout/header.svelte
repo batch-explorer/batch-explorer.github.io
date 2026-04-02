@@ -4,15 +4,17 @@
 -->
 
 <script lang="ts">
-  import { base } from '$app/paths'
+  import { resolveRoute } from '$app/paths'
   import SearchBar from '$lib/components/search-bar.svelte'
   import { networkStatsStore } from '$lib/stores/network-stats.svelte'
 </script>
 
 <header class="border-b bg-card shadow-sm">
   <div class="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3">
-    <!-- eslint-disable svelte/no-navigation-without-resolve -- static routes with base path -->
-    <a href="{base}/" class="flex items-center gap-2 font-semibold text-lg whitespace-nowrap">
+    <a
+      href={resolveRoute('/')}
+      class="flex items-center gap-2 font-semibold text-lg whitespace-nowrap"
+    >
       Batch Explorer
     </a>
 
