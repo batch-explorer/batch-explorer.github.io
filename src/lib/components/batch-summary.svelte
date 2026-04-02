@@ -11,7 +11,7 @@
   import { GNOSISSCAN_BASE_URL } from '$lib/constants'
   import { bzzPriceStore } from '$lib/stores/bzz-price.svelte'
   import type { BatchDetail } from '$lib/types'
-  import { formatBzz, formatExpiry, formatStorageCapacity } from '$lib/format'
+  import { formatBzz, formatExpiry, formatStorageCapacity, formatUsd } from '$lib/format'
 
   interface Props {
     batch: BatchDetail
@@ -23,19 +23,14 @@
 
   const creationEvent = $derived(batch.events.find((e) => e.eventName === 'BatchCreated'))
   const creationDate = $derived(creationEvent?.blockTime?.toLocaleString() ?? '')
+  const totalAmountUsd = $derived(formatUsd(batch.totalAmount, bzzPriceStore.price))
 
   const rows = $derived([
     { label: 'Batch ID', value: batch.batchId.slice(2) },
     { label: 'Owner', value: batch.owner, link: `${GNOSISSCAN_BASE_URL}/address/${batch.owner}` },
     {
       label: 'Total Amount',
-      value: (() => {
-        const bzz = formatBzz(batch.totalAmount)
-        const plur = batch.totalAmount.toString()
-        if (!bzzPriceStore.price) return `${bzz} BZZ · ${plur} PLUR`
-        const usd = (Number(bzz) * bzzPriceStore.price).toFixed(2)
-        return `${usd} USD · ${bzz} BZZ · ${plur} PLUR`
-      })(),
+      value: `${formatBzz(batch.totalAmount)} BZZ · ${batch.totalAmount.toString()} PLUR`,
     },
     { label: 'Storage Capacity', value: formatStorageCapacity(batch.depth) },
     {
@@ -72,6 +67,14 @@
               <HexDisplay value={row.value} truncate={false} />
             {:else if row.label === 'Owner'}
               <HexDisplay value={row.value} href={row.link} truncate={false} />
+            {:else if row.label === 'Total Amount'}
+              {row.value}
+              {#if totalAmountUsd}
+                <span
+                  class="ml-1 inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground"
+                  >{totalAmountUsd}</span
+                >
+              {/if}
             {:else if row.numeric}
               <NumberDisplay value={row.value} />
             {:else}

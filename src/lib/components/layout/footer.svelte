@@ -19,13 +19,26 @@
     <div class="flex flex-col gap-1">
       <span>RPC: {DEFAULT_GNOSIS_RPC_URL}</span>
       {#if bzzPriceStore.price}
-        <span>BZZ price: {bzzPriceStore.price.toFixed(2)} USD</span>
+        <span>
+          BZZ price:
+          <span
+            class="ml-1 inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground"
+            >${bzzPriceStore.price.toFixed(2)}</span
+          >
+        </span>
       {/if}
       {#if networkStatsStore.stats}
+        {@const storagePriceUsd = bzzPriceStore.price
+          ? (networkStatsStore.stats.pricePerGBPerMonth * bzzPriceStore.price).toFixed(4)
+          : undefined}
         <span>
-          Storage price: {networkStatsStore.stats.pricePerGBPerMonth.toFixed(4)} BZZ/GB/mo ({(
-            networkStatsStore.stats.pricePerGBPerMonth * (bzzPriceStore.price ?? 0)
-          ).toFixed(4)} USD/GB/mo)
+          Storage price: {networkStatsStore.stats.pricePerGBPerMonth.toFixed(4)} BZZ/GB/mo
+          {#if storagePriceUsd}
+            <span
+              class="ml-1 inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground"
+              >${storagePriceUsd}/GB/mo</span
+            >
+          {/if}
         </span>
       {/if}
       {#if networkStatsStore.contractBalance !== undefined}
@@ -34,7 +47,10 @@
         <span>
           Contract balance TVL: {balanceBzz.toLocaleString()} BZZ
           {#if balanceUsd !== undefined}
-            ({balanceUsd.toLocaleString(undefined, { maximumFractionDigits: 0 })} USD)
+            <span
+              class="ml-1 inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground"
+              >${balanceUsd.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span
+            >
           {/if}
         </span>
       {/if}

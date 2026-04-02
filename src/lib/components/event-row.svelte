@@ -14,9 +14,10 @@
     BatchDepthIncreaseArgs,
     PriceUpdateArgs,
   } from '$lib/types'
-  import { formatBzz, formatStorageCapacity } from '$lib/format'
+  import { formatBzz, formatStorageCapacity, formatUsd } from '$lib/format'
   import EventBadge from './event-badge.svelte'
   import { networkStatsStore } from '$lib/stores/network-stats.svelte'
+  import { bzzPriceStore } from '$lib/stores/bzz-price.svelte'
 
   interface Props {
     event: PostageEvent
@@ -94,26 +95,34 @@
     return date.toLocaleDateString()
   }
 
-  function getDetail(event: PostageEvent): string {
+  function getDetail(event: PostageEvent): { text: string; usd: string | undefined } {
     switch (event.eventName) {
       case 'BatchCreated': {
         const args = event.args as BatchCreatedArgs
         const duration = calculateBatchDuration(args.depth, args.totalAmount)
-        const baseDetail = `${formatStorageCapacity(args.depth)} for ${duration}, ${formatBzz(args.totalAmount)} BZZ`
-        return baseDetail
+        return {
+          text: `${formatStorageCapacity(args.depth)} for ${duration}, ${formatBzz(args.totalAmount)} BZZ`,
+          usd: formatUsd(args.totalAmount, bzzPriceStore.price),
+        }
       }
       case 'BatchTopUp': {
         const args = event.args as BatchTopUpArgs
         const duration = calculateTopUpDuration(args.topupAmount)
-        return `adds ${duration}, ${formatBzz(args.topupAmount)} BZZ`
+        return {
+          text: `adds ${duration}, ${formatBzz(args.topupAmount)} BZZ`,
+          usd: formatUsd(args.topupAmount, bzzPriceStore.price),
+        }
       }
       case 'BatchDepthIncrease': {
         const args = event.args as BatchDepthIncreaseArgs
-        return `increase capacity to ${formatStorageCapacity(args.newDepth)}`
+        return {
+          text: `increase capacity to ${formatStorageCapacity(args.newDepth)}`,
+          usd: undefined,
+        }
       }
       case 'PriceUpdate': {
         const args = event.args as PriceUpdateArgs
-        return `price: ${args.price.toString()}`
+        return { text: `price: ${args.price.toString()}`, usd: undefined }
       }
     }
   }
@@ -123,7 +132,7 @@
 </script>
 
 <div
-  class="grid grid-cols-[11rem_8rem_6.5rem_1fr_2fr_1fr] items-center gap-4 border-b px-4 py-3 text-sm hover:bg-muted/50 transition-colors"
+  class="grid grid-cols-[1fr_7rem_6.5rem_1fr_2fr_1fr] items-center gap-4 border-b px-4 py-3 text-sm hover:bg-muted/50 transition-colors"
 >
   <div>
     <HexDisplay
@@ -151,7 +160,13 @@
   </div>
 
   <div class="text-muted-foreground truncate">
-    {detail}
+    {detail.text}
+    {#if detail.usd}
+      <span
+        class="ml-1 inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground"
+        >{detail.usd}</span
+      >
+    {/if}
   </div>
 
   <div class="min-w-0">

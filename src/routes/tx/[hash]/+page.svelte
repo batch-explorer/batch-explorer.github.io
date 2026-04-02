@@ -22,6 +22,8 @@
     PriceUpdateArgs,
   } from '$lib/types'
   import EventBadge from '$lib/components/event-badge.svelte'
+  import { formatBzz, formatUsd } from '$lib/format'
+  import { bzzPriceStore } from '$lib/stores/bzz-price.svelte'
 
   let txHash = $derived($page.params.hash as `0x${string}`)
   let txDetail = $state<TransactionDetail | undefined>(undefined)
@@ -153,6 +155,7 @@
               <div class="flex-1 space-y-1 text-sm">
                 {#if event.eventName === 'BatchCreated'}
                   {@const args = event.args as BatchCreatedArgs}
+                  {@const createdUsd = formatUsd(args.totalAmount, bzzPriceStore.price)}
                   <div>
                     <span class="text-muted-foreground">Batch:</span>
                     <HexDisplay
@@ -169,12 +172,19 @@
                   </div>
                   <div>
                     <span class="text-muted-foreground">Amount:</span>
-                    {args.totalAmount.toString()},
+                    {formatBzz(args.totalAmount)} BZZ
+                    {#if createdUsd}
+                      <span
+                        class="ml-1 inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground"
+                        >{createdUsd}</span
+                      >
+                    {/if},
                     <span class="text-muted-foreground">Depth:</span>
                     {args.depth}
                   </div>
                 {:else if event.eventName === 'BatchTopUp'}
                   {@const args = event.args as BatchTopUpArgs}
+                  {@const topupUsd = formatUsd(args.topupAmount, bzzPriceStore.price)}
                   <div>
                     <span class="text-muted-foreground">Batch:</span>
                     <HexDisplay
@@ -184,7 +194,13 @@
                   </div>
                   <div>
                     <span class="text-muted-foreground">Top-up:</span>
-                    {args.topupAmount.toString()}
+                    {formatBzz(args.topupAmount)} BZZ
+                    {#if topupUsd}
+                      <span
+                        class="ml-1 inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground"
+                        >{topupUsd}</span
+                      >
+                    {/if}
                   </div>
                 {:else if event.eventName === 'BatchDepthIncrease'}
                   {@const args = event.args as BatchDepthIncreaseArgs}

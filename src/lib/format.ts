@@ -20,6 +20,14 @@ export function formatBzz(plur: bigint): string {
   return raw.toFixed(places)
 }
 
+export function formatUsd(plur: bigint, bzzPrice: number | undefined): string | undefined {
+  if (bzzPrice === undefined) return undefined
+  const bzz = Number(formatBzz(plur))
+  const usd = bzz * bzzPrice
+  if (usd < 0.01) return '<$0.01'
+  return `$${usd.toFixed(2)}`
+}
+
 export function formatStorageCapacity(depth: number, fractionDigits = 0): string {
   const chunks = 2 ** depth
   const bytes = chunks * CHUNK_SIZE

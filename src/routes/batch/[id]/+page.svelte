@@ -16,6 +16,8 @@
   import { GNOSISSCAN_BASE_URL } from '$lib/constants'
   import type { BatchCreatedArgs, BatchTopUpArgs, BatchDepthIncreaseArgs } from '$lib/types'
   import EventBadge from '$lib/components/event-badge.svelte'
+  import { formatBzz, formatUsd } from '$lib/format'
+  import { bzzPriceStore } from '$lib/stores/bzz-price.svelte'
 
   let batchId = $derived($page.params.id ?? '')
 
@@ -69,6 +71,7 @@
             <div class="flex-1 space-y-1 text-sm">
               {#if event.eventName === 'BatchCreated'}
                 {@const args = event.args as BatchCreatedArgs}
+                {@const createdUsd = formatUsd(args.totalAmount, bzzPriceStore.price)}
                 <div>
                   <span class="text-muted-foreground">Owner:</span>
                   <HexDisplay
@@ -78,7 +81,13 @@
                 </div>
                 <div>
                   <span class="text-muted-foreground">Amount:</span>
-                  {args.totalAmount.toString()}
+                  {formatBzz(args.totalAmount)} BZZ
+                  {#if createdUsd}
+                    <span
+                      class="ml-1 inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground"
+                      >{createdUsd}</span
+                    >
+                  {/if}
                 </div>
                 <div>
                   <span class="text-muted-foreground">Depth:</span>
@@ -88,9 +97,16 @@
                 </div>
               {:else if event.eventName === 'BatchTopUp'}
                 {@const args = event.args as BatchTopUpArgs}
+                {@const topupUsd = formatUsd(args.topupAmount, bzzPriceStore.price)}
                 <div>
                   <span class="text-muted-foreground">Top-up Amount:</span>
-                  {args.topupAmount.toString()}
+                  {formatBzz(args.topupAmount)} BZZ
+                  {#if topupUsd}
+                    <span
+                      class="ml-1 inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground"
+                      >{topupUsd}</span
+                    >
+                  {/if}
                 </div>
                 <div>
                   <span class="text-muted-foreground">New Balance:</span>
