@@ -62,10 +62,10 @@
       </CardHeader>
       <CardContent class="p-0">
         {#each batchDetailStore.batch.events as event, i (`${event.transactionHash}-${event.logIndex}`)}
-          <div class="flex items-start gap-4 border-b px-6 py-4 last:border-0">
-            <div class="flex flex-col items-center gap-1">
+          <div class="grid grid-cols-[7rem_1fr] items-start gap-4 border-b px-6 py-4 last:border-0">
+            <div class="flex flex-col items-stretch gap-1">
               <EventBadge {event} />
-              <span class="text-xs text-muted-foreground">#{i + 1}</span>
+              <span class="text-xs text-muted-foreground self-center">#{i + 1}</span>
             </div>
 
             <div class="flex-1 space-y-1 text-sm">
