@@ -6,7 +6,12 @@
 <script lang="ts">
   import { networkStatsStore } from '$lib/stores/network-stats.svelte'
   import { bzzPriceStore } from '$lib/stores/bzz-price.svelte'
-  import { GNOSISSCAN_BASE_URL, DEFAULT_GNOSIS_RPC_URL, PLUR_PER_BZZ, POSTAGE_STAMP_ADDRESS } from '$lib/constants'
+  import {
+    GNOSISSCAN_BASE_URL,
+    DEFAULT_GNOSIS_RPC_URL,
+    PLUR_PER_BZZ,
+    POSTAGE_STAMP_ADDRESS,
+  } from '$lib/constants'
 </script>
 
 <footer class="border-t bg-card py-4 text-xs text-muted-foreground">
@@ -18,7 +23,9 @@
       {/if}
       {#if networkStatsStore.stats}
         <span>
-          Storage price: {networkStatsStore.stats.pricePerGBPerMonth.toFixed(4)} BZZ/GB/mo ({(networkStatsStore.stats.pricePerGBPerMonth * (bzzPriceStore.price ?? 0)).toFixed(4)} USD/GB/mo) 
+          Storage price: {networkStatsStore.stats.pricePerGBPerMonth.toFixed(4)} BZZ/GB/mo ({(
+            networkStatsStore.stats.pricePerGBPerMonth * (bzzPriceStore.price ?? 0)
+          ).toFixed(4)} USD/GB/mo)
         </span>
       {/if}
       {#if networkStatsStore.contractBalance !== undefined}
@@ -31,16 +38,16 @@
           {/if}
         </span>
       {/if}
-      <span>Contract: 
-              <a
-        href={`${GNOSISSCAN_BASE_URL}/address/${POSTAGE_STAMP_ADDRESS}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="hover:text-foreground"
-      >
-        {POSTAGE_STAMP_ADDRESS}
-      </a>
-
+      <span
+        >Contract:
+        <a
+          href={`${GNOSISSCAN_BASE_URL}/address/${POSTAGE_STAMP_ADDRESS}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hover:text-foreground"
+        >
+          {POSTAGE_STAMP_ADDRESS}
+        </a>
       </span>
     </div>
     <div class="flex items-center gap-4">
@@ -60,6 +67,14 @@
         class="hover:text-foreground"
       >
         Swarmscan
+      </a>
+      <a
+        href="https://github.com/batch-explorer/batch-explorer.github.io"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hover:text-foreground"
+      >
+        GitHub
       </a>
     </div>
   </div>
