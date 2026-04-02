@@ -34,14 +34,14 @@ The app will be available at `http://localhost:5175`.
 
 ## Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `pnpm dev` | Start development server on port 5175 |
-| `pnpm build` | Build for production |
-| `pnpm preview` | Preview production build |
-| `pnpm check` | Run Svelte type checking |
-| `pnpm lint` | Check code formatting and linting |
-| `pnpm format` | Auto-fix formatting and lint issues |
+| Script         | Description                           |
+| -------------- | ------------------------------------- |
+| `pnpm dev`     | Start development server on port 5175 |
+| `pnpm build`   | Build for production                  |
+| `pnpm preview` | Preview production build              |
+| `pnpm check`   | Run Svelte type checking              |
+| `pnpm lint`    | Check code formatting and linting     |
+| `pnpm format`  | Auto-fix formatting and lint issues   |
 
 ## Tech Stack
 
