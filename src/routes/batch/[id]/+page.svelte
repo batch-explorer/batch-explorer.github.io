@@ -16,6 +16,7 @@
   import { batchDetailStore } from '$lib/stores/batch-detail.svelte'
   import { GNOSISSCAN_BASE_URL } from '$lib/constants'
   import type { BatchCreatedArgs, BatchTopUpArgs, BatchDepthIncreaseArgs } from '$lib/types'
+  import EventBadge from '$lib/components/event-badge.svelte'
 
   const VARIANT_MAP = {
     BatchCreated: 'success',
@@ -68,9 +69,7 @@
         {#each batchDetailStore.batch.events as event, i (`${event.transactionHash}-${event.logIndex}`)}
           <div class="flex items-start gap-4 border-b px-6 py-4 last:border-0">
             <div class="flex flex-col items-center gap-1">
-              <Badge variant={VARIANT_MAP[event.eventName]}>
-                {event.eventName}
-              </Badge>
+              <EventBadge {event}/>
               <span class="text-xs text-muted-foreground">#{i + 1}</span>
             </div>
 

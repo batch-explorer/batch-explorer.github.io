@@ -16,19 +16,13 @@
     PriceUpdateArgs,
   } from '$lib/types'
   import { formatBzz, formatStorageCapacity } from '$lib/format'
+  import EventBadge from './event-badge.svelte'
 
   interface Props {
     event: PostageEvent
   }
 
   let { event }: Props = $props()
-
-  const VARIANT_MAP = {
-    BatchCreated: 'success',
-    BatchTopUp: 'default',
-    BatchDepthIncrease: 'warning',
-    PriceUpdate: 'secondary',
-  } as const
 
   function formatAmount(value: bigint): string {
     const str = value.toString()
@@ -70,11 +64,9 @@
 
 <!-- eslint-disable svelte/no-navigation-without-resolve -- external links and dynamic routes with base path -->
 <div
-  class="grid grid-cols-[9.5rem_1fr_1fr_1fr_6.5rem_11rem] items-center gap-4 border-b px-4 py-3 text-sm hover:bg-muted/50 transition-colors"
+  class="grid grid-cols-[8rem_1fr_1fr_1fr_6.5rem_11rem] items-center gap-4 border-b px-4 py-3 text-sm hover:bg-muted/50 transition-colors"
 >
-  <Badge variant={VARIANT_MAP[event.eventName]}>
-    {event.eventName}
-  </Badge>
+  <EventBadge {event}/>
 
   <div class="min-w-0">
     {#if batchId}

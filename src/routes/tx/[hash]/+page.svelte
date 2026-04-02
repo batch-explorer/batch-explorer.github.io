@@ -21,13 +21,7 @@
     BatchDepthIncreaseArgs,
     PriceUpdateArgs,
   } from '$lib/types'
-
-  const VARIANT_MAP = {
-    BatchCreated: 'success',
-    BatchTopUp: 'default',
-    BatchDepthIncrease: 'warning',
-    PriceUpdate: 'secondary',
-  } as const
+  import EventBadge from '$lib/components/event-badge.svelte'
 
   let txHash = $derived($page.params.hash as `0x${string}`)
   let txDetail = $state<TransactionDetail | undefined>(undefined)
@@ -84,7 +78,14 @@
           <div class="grid grid-cols-[200px_1fr] gap-4 border-b pb-3">
             <dt class="text-sm font-medium text-muted-foreground">Transaction Hash</dt>
             <dd class="text-sm font-mono break-all">
-              <HexDisplay value={txDetail.hash} truncate={false} />
+              <a
+                href="{GNOSISSCAN_BASE_URL}/tx/{txDetail.hash}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-primary hover:underline"
+              >
+                <HexDisplay value={txDetail.hash} truncate={false} />
+              </a>
             </dd>
           </div>
           <div class="grid grid-cols-[200px_1fr] gap-4 border-b pb-3">
@@ -146,9 +147,7 @@
         <CardContent class="p-0">
           {#each txDetail.events as event (`${event.transactionHash}-${event.logIndex}`)}
             <div class="flex items-start gap-4 border-b px-6 py-4 last:border-0">
-              <Badge variant={VARIANT_MAP[event.eventName]}>
-                {event.eventName}
-              </Badge>
+              <EventBadge {event}/>
 
               <div class="flex-1 space-y-1 text-sm">
                 {#if event.eventName === 'BatchCreated'}
