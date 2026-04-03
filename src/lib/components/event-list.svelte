@@ -38,12 +38,13 @@
   </CardHeader>
   <CardContent class="p-0">
     <div
-      class="grid grid-cols-[1fr_7rem_6.5rem_1fr_2fr_1fr] gap-4 border-b bg-muted/50 px-4 py-2 text-xs font-medium text-muted-foreground"
+      class="grid grid-cols-[1fr_7rem_6.5rem_1fr_1fr_2fr_1fr] gap-4 border-b bg-muted/50 px-4 py-2 text-xs font-medium text-muted-foreground"
     >
       <span>Tx Hash</span>
       <span>Event</span>
       <span>Block</span>
       <span>Age</span>
+      <span>Sender</span>
       <span>Details</span>
       <span>Batch ID</span>
     </div>

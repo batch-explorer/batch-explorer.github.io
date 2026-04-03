@@ -132,7 +132,7 @@
 </script>
 
 <div
-  class="grid grid-cols-[1fr_7rem_6.5rem_1fr_2fr_1fr] items-center gap-4 border-b px-4 py-3 text-sm hover:bg-muted/50 transition-colors"
+  class="grid grid-cols-[1fr_7rem_6.5rem_1fr_1fr_2fr_1fr] items-center gap-4 border-b px-4 py-3 text-sm hover:bg-muted/50 transition-colors"
 >
   <div>
     <HexDisplay
@@ -150,6 +150,18 @@
 
   <div class="text-muted-foreground truncate" title={event.blockTime?.toLocaleString()}>
     {formatRelativeTime(event.blockTime)}
+  </div>
+
+  <div>
+    {#if event.txSender}
+      <HexDisplay
+        value={event.txSender}
+        showEnd={false}
+        href={`https://gnosisscan.io/address/${event.txSender}`}
+      />
+    {:else}
+      <span class="text-muted-foreground">-</span>
+    {/if}
   </div>
 
   <div class="text-muted-foreground truncate">

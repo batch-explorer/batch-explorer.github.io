@@ -42,6 +42,7 @@ export interface PostageEvent {
   blockTime?: Date
   transactionHash: `0x${string}`
   logIndex: number
+  txSender?: `0x${string}`
 }
 
 export interface BatchDetail {

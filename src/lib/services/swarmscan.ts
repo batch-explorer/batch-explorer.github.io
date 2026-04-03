@@ -36,6 +36,7 @@ function mapSwarmscanEvent(raw: SwarmscanEvent): PostageEvent {
     blockTime: new Date(raw.blockTime),
     transactionHash: raw.txHash as `0x${string}`,
     logIndex: raw.index,
+    txSender: raw.txSender as `0x${string}`,
   }
 
   switch (eventName) {
