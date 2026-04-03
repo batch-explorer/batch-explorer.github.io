@@ -12,6 +12,9 @@ export async function fetchTransactionDetail(hash: `0x${string}`): Promise<Trans
     publicClient.getTransactionReceipt({ hash }),
   ])
 
+  const block = await publicClient.getBlock({ blockNumber: receipt.blockNumber })
+  const blockTime = new Date(Number(block.timestamp) * 1000)
+
   const parsed = parseEventLogs({
     abi: POSTAGE_STAMP_ABI,
     logs: receipt.logs,
@@ -28,6 +31,7 @@ export async function fetchTransactionDetail(hash: `0x${string}`): Promise<Trans
   return {
     hash,
     blockNumber: receipt.blockNumber,
+    blockTime,
     from: tx.from,
     to: tx.to ?? undefined,
     gasUsed: receipt.gasUsed,

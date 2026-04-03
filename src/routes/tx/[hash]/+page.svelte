@@ -22,6 +22,7 @@
     PriceUpdateArgs,
   } from '$lib/types'
   import EventBadge from '$lib/components/event-badge.svelte'
+  import BlockBadge from '$lib/components/block-badge.svelte'
   import { formatBzz, formatUsd } from '$lib/format'
   import { bzzPriceStore } from '$lib/stores/bzz-price.svelte'
 
@@ -100,16 +101,12 @@
             </dd>
           </div>
           <div class="grid grid-cols-[200px_1fr] gap-4 border-b pb-3">
-            <dt class="text-sm font-medium text-muted-foreground">Block</dt>
+            <dt class="text-sm font-medium text-muted-foreground">Date</dt>
             <dd class="text-sm">
-              <a
-                href="{GNOSISSCAN_BASE_URL}/block/{txDetail.blockNumber}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-primary hover:underline"
-              >
-                #{txDetail.blockNumber.toString()}
-              </a>
+              {#if txDetail.blockTime}
+                {txDetail.blockTime.toLocaleString()} ·
+              {/if}
+              <BlockBadge blockNumber={txDetail.blockNumber} />
             </dd>
           </div>
           <div class="grid grid-cols-[200px_1fr] gap-4 border-b pb-3">

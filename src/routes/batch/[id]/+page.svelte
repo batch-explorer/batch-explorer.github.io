@@ -16,6 +16,7 @@
   import { GNOSISSCAN_BASE_URL } from '$lib/constants'
   import type { BatchCreatedArgs, BatchTopUpArgs, BatchDepthIncreaseArgs } from '$lib/types'
   import EventBadge from '$lib/components/event-badge.svelte'
+  import BlockBadge from '$lib/components/block-badge.svelte'
   import { formatBzz, formatUsd } from '$lib/format'
   import { bzzPriceStore } from '$lib/stores/bzz-price.svelte'
 
@@ -125,18 +126,11 @@
               {/if}
 
               <div>
-                <span class="text-muted-foreground">Block:</span>
-                <a
-                  href="{GNOSISSCAN_BASE_URL}/block/{event.blockNumber}"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="hover:text-muted-foreground"
-                >
-                  #{event.blockNumber.toString()}
-                </a>
                 {#if event.blockTime}
-                  · {event.blockTime.toLocaleString()}
+                  <span class="text-muted-foreground">Date:</span>
+                  {event.blockTime.toLocaleString()} ·
                 {/if}
+                <BlockBadge blockNumber={event.blockNumber} />
               </div>
               <div>
                 <span class="text-muted-foreground">Transaction:</span>

@@ -8,6 +8,7 @@
   import { Badge } from '$lib/components/ui/badge'
   import { Button } from '$lib/components/ui/button'
   import HexDisplay from '$lib/components/hex-display.svelte'
+  import BlockBadge from '$lib/components/block-badge.svelte'
   import NumberDisplay from '$lib/components/number-display.svelte'
   import { GNOSISSCAN_BASE_URL } from '$lib/constants'
   import { bzzPriceStore } from '$lib/stores/bzz-price.svelte'
@@ -86,6 +87,9 @@
                   >{totalAmountUsd}</span
                 >
               {/if}
+            {:else if row.label === 'Created'}
+              {creationDate ? `${creationDate} · ` : ''}
+              <BlockBadge blockNumber={batch.creationBlock} />
             {:else if row.numeric}
               <NumberDisplay value={row.value} />
             {:else}

@@ -6,7 +6,6 @@
 <script lang="ts">
   import { resolveRoute } from '$app/paths'
   import HexDisplay from '$lib/components/hex-display.svelte'
-  import { GNOSISSCAN_BASE_URL } from '$lib/constants'
   import type {
     PostageEvent,
     BatchCreatedArgs,
@@ -16,6 +15,7 @@
   } from '$lib/types'
   import { formatBzz, formatStorageCapacity, formatUsd } from '$lib/format'
   import EventBadge from './event-badge.svelte'
+  import BlockBadge from './block-badge.svelte'
   import { networkStatsStore } from '$lib/stores/network-stats.svelte'
   import { bzzPriceStore } from '$lib/stores/bzz-price.svelte'
 
@@ -144,15 +144,8 @@
 
   <EventBadge {event} />
 
-  <div class="text-muted-foreground text-xs">
-    <a
-      href="{GNOSISSCAN_BASE_URL}/block/{event.blockNumber}"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="hover:text-foreground"
-    >
-      #{event.blockNumber.toString()}
-    </a>
+  <div>
+    <BlockBadge blockNumber={event.blockNumber} />
   </div>
 
   <div class="text-muted-foreground truncate" title={event.blockTime?.toLocaleString()}>

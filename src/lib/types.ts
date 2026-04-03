@@ -64,6 +64,7 @@ export interface NetworkStats {
 export interface TransactionDetail {
   hash: `0x${string}`
   blockNumber: bigint
+  blockTime?: Date
   from: `0x${string}`
   to: `0x${string}` | undefined
   gasUsed: bigint
