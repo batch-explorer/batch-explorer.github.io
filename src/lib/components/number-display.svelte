@@ -5,33 +5,13 @@
 
 <script lang="ts">
   interface Props {
-    value: string
+    value: bigint | number
+    sans?: boolean
   }
 
-  let { value }: Props = $props()
+  let { value, sans = false }: Props = $props()
 
-  function splitDigitGroups(str: string): string[] {
-    const result: string[] = []
-    for (let i = str.length; i > 0; i -= 3) {
-      result.unshift(str.slice(Math.max(0, i - 3), i))
-    }
-    return result
-  }
-
-  const groups = $derived(splitDigitGroups(value))
+  const formatted = $derived(value.toLocaleString('en-US').replaceAll(',', ' '))
 </script>
 
-<span class="digit-groups">
-  {#each groups as group, i (i)}
-    <span class="digit-group">{group}</span>
-  {/each}
-</span>
-
-<style>
-  .digit-groups {
-    display: inline;
-  }
-  .digit-group + .digit-group {
-    margin-left: 0.3em;
-  }
-</style>
+<span class={sans ? 'tabular-nums' : 'font-mono tabular-nums'}>{formatted}</span>

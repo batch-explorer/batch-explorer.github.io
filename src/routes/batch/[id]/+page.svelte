@@ -17,6 +17,7 @@
   import type { BatchCreatedArgs, BatchTopUpArgs, BatchDepthIncreaseArgs } from '$lib/types'
   import EventBadge from '$lib/components/event-badge.svelte'
   import BlockBadge from '$lib/components/block-badge.svelte'
+  import NumberDisplay from '$lib/components/number-display.svelte'
   import { formatBzz, formatUsd } from '$lib/format'
   import { bzzPriceStore } from '$lib/stores/bzz-price.svelte'
 
@@ -111,7 +112,7 @@
                 </div>
                 <div>
                   <span class="text-muted-foreground">New Balance:</span>
-                  {args.normalisedBalance.toString()}
+                  <NumberDisplay value={args.normalisedBalance} sans />
                 </div>
               {:else if event.eventName === 'BatchDepthIncrease'}
                 {@const args = event.args as BatchDepthIncreaseArgs}
@@ -121,7 +122,7 @@
                 </div>
                 <div>
                   <span class="text-muted-foreground">New Balance:</span>
-                  {args.normalisedBalance.toString()}
+                  <NumberDisplay value={args.normalisedBalance} sans />
                 </div>
               {/if}
 

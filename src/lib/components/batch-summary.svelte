@@ -47,7 +47,7 @@
     { label: 'Immutable', value: batch.immutableFlag ? 'Yes' : 'No' },
     { label: 'Depth', value: batch.depth.toString() },
     { label: 'Bucket Depth', value: batch.bucketDepth.toString() },
-    { label: 'Normalised Balance', value: batch.normalisedBalance.toString(), numeric: true },
+    { label: 'Normalised Balance', value: batch.normalisedBalance, numeric: true },
     { label: 'Event Count', value: batch.events.length.toString() },
   ])
 </script>
@@ -90,8 +90,8 @@
             {:else if row.label === 'Created'}
               {creationDate ? `${creationDate} · ` : ''}
               <BlockBadge blockNumber={batch.creationBlock} />
-            {:else if row.numeric}
-              <NumberDisplay value={row.value} />
+            {:else if row.label === 'Normalised Balance'}
+              <NumberDisplay value={batch.normalisedBalance} />
             {:else}
               {row.value}
             {/if}
