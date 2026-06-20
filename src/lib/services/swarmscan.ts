@@ -111,15 +111,15 @@ export async function fetchSwarmscanStats(): Promise<NetworkStats> {
   return { pricePerGBPerMonth: data.pricePerGBPerMonth }
 }
 
-const POSTAGE_EVENT_TYPES = ['batch-created', 'batch-top-up', 'batch-depth-increase'] as const
+export const POSTAGE_EVENT_TYPES = [
+  'batch-created',
+  'batch-top-up',
+  'batch-depth-increase',
+] as const
 
-export interface EventCursors {
-  'batch-created'?: string
-  'batch-top-up'?: string
-  'batch-depth-increase'?: string
-}
+export type PostageEventType = (typeof POSTAGE_EVENT_TYPES)[number]
 
-async function fetchEventsByType(
+export async function fetchEventsByType(
   eventType: string,
   cursor?: string,
 ): Promise<{ events: PostageEvent[]; nextCursor?: string }> {
@@ -137,32 +137,6 @@ async function fetchEventsByType(
   const events = (data.events ?? []).map(mapSwarmscanEvent)
 
   return { events, nextCursor: data.next }
-}
-
-export async function fetchRecentEvents(cursors?: EventCursors): Promise<{
-  events: PostageEvent[]
-  nextCursors: EventCursors
-}> {
-  const results = await Promise.all(
-    POSTAGE_EVENT_TYPES.map((type) => fetchEventsByType(type, cursors?.[type])),
-  )
-
-  const nextCursors: EventCursors = {}
-  const allEvents: PostageEvent[] = []
-
-  for (let i = 0; i < POSTAGE_EVENT_TYPES.length; i++) {
-    allEvents.push(...results[i].events)
-    if (results[i].nextCursor) {
-      nextCursors[POSTAGE_EVENT_TYPES[i]] = results[i].nextCursor
-    }
-  }
-
-  allEvents.sort((a, b) => {
-    if (a.blockNumber !== b.blockNumber) return Number(b.blockNumber - a.blockNumber)
-    return b.logIndex - a.logIndex
-  })
-
-  return { events: allEvents, nextCursors }
 }
 
 export async function fetchPriceUpdates(
