@@ -125,7 +125,7 @@ async function fetchEventsByType(
 ): Promise<{ events: PostageEvent[]; nextCursor?: string }> {
   const url = new URL(`${SWARMSCAN_API_BASE}/events/postage-stamp/${eventType}`)
   if (cursor) {
-    url.searchParams.set('next', cursor)
+    url.searchParams.set('start', cursor)
   }
 
   const response = await fetch(url)
@@ -163,6 +163,12 @@ export async function fetchRecentEvents(cursors?: EventCursors): Promise<{
   })
 
   return { events: allEvents, nextCursors }
+}
+
+export async function fetchPriceUpdates(
+  cursor?: string,
+): Promise<{ events: PostageEvent[]; nextCursor?: string }> {
+  return fetchEventsByType('price-update', cursor)
 }
 
 export async function fetchBatchEvents(batchId: string): Promise<PostageEvent[]> {

@@ -22,3 +22,8 @@ export const CHUNK_SIZE = 4096
 export const GNOSIS_BLOCK_TIME_MS = 5000
 
 export const PLUR_PER_BZZ = 10n ** 16n
+
+// Derived for unit-price → storage-cost conversion.
+// ponytail: "month" = 30 days; Swarmscan's own figure may differ slightly.
+export const CHUNKS_PER_GB = 1024 ** 3 / CHUNK_SIZE // 262144
+export const BLOCKS_PER_MONTH = (30 * 24 * 3600 * 1000) / GNOSIS_BLOCK_TIME_MS // 518400

@@ -18,6 +18,13 @@
       Batch Explorer
     </a>
 
+    <a
+      href={resolveRoute('/price')}
+      class="text-sm whitespace-nowrap text-muted-foreground hover:text-foreground"
+    >
+      Price
+    </a>
+
     <SearchBar class="max-w-xl" />
 
     {#if networkStatsStore.currentBlock}
