@@ -80,7 +80,7 @@
             {:else if row.label === 'Owner'}
               <HexDisplay value={row.value} href={row.link} truncate={false} />
             {:else if row.label === 'Total Amount'}
-              {row.value}
+              {formatBzz(batch.totalAmount)} BZZ · <NumberDisplay value={batch.totalAmount} /> PLUR
               {#if totalAmountUsd}
                 <span
                   class="ml-1 inline-flex items-center rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground"
