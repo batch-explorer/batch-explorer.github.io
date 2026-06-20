@@ -56,8 +56,6 @@
     return {
       nodes,
       polyline: nodes.map((n) => `${n.fx * W},${n.fy * H}`).join(' '),
-      pMin,
-      pMax,
       first: pts[0].blockTime,
       last: pts[pts.length - 1].blockTime,
     }
@@ -84,21 +82,16 @@
 </script>
 
 {#if chart}
-  <div class="rounded-lg border bg-card p-4">
-    <div class="mb-2 flex justify-between text-xs text-muted-foreground">
-      <span>{chart.pMax.toLocaleString()} (high)</span>
-      <span>{chart.pMin.toLocaleString()} (low)</span>
-    </div>
-
+  <div class="flex h-full flex-col rounded-lg border bg-card p-4">
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
-      class="relative"
+      class="relative min-h-0 flex-1"
       bind:clientWidth
       bind:clientHeight
       onmousemove={onmove}
       onmouseleave={() => (hovered = undefined)}
     >
-      <svg viewBox="0 0 {W} {H}" class="block h-auto w-full" preserveAspectRatio="none" role="img">
+      <svg viewBox="0 0 {W} {H}" class="block h-full w-full" preserveAspectRatio="none" role="img">
         <polyline
           points={chart.polyline}
           fill="none"
@@ -140,7 +133,6 @@
     </div>
   </div>
 {:else}
-  <div class="rounded-lg border bg-card p-8 text-center text-sm text-muted-foreground">
-    Not enough price history to chart yet.
-  </div>
+  <!-- No data: blank framed area (the loading badge conveys state). -->
+  <div class="h-full rounded-lg border bg-card"></div>
 {/if}
