@@ -27,3 +27,12 @@ export const PLUR_PER_BZZ = 10n ** 16n
 // ponytail: "month" = 30 days; Swarmscan's own figure may differ slightly.
 export const CHUNKS_PER_GB = 1024 ** 3 / CHUNK_SIZE // 262144
 export const BLOCKS_PER_MONTH = (30 * 24 * 3600 * 1000) / GNOSIS_BLOCK_TIME_MS // 518400
+
+// keccak256("PriceUpdate(uint256)") — topic0 for getLogs filtering.
+export const PRICE_UPDATE_TOPIC =
+  '0xae46785019700e30375a5d7b4f91e32f8060ef085111f896ebf889450aa2ab5a'
+
+// First PriceUpdate event (contract deployed at block 31305656, 2023-12-06).
+// Used as the exact "All"-range start and the average-block-time baseline.
+export const FIRST_PRICE_BLOCK = 31307171
+export const FIRST_PRICE_TIME_MS = 1701875565000

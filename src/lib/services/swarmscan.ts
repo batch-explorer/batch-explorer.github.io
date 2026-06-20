@@ -85,7 +85,7 @@ function mapSwarmscanEvent(raw: SwarmscanEvent): PostageEvent {
   }
 }
 
-function mapBlockscoutLog(log: BlockscoutLogEntry): PostageEvent {
+export function mapBlockscoutLog(log: BlockscoutLogEntry): PostageEvent {
   const decoded = decodeEventLog({
     abi: POSTAGE_STAMP_ABI,
     data: log.data as `0x${string}`,
