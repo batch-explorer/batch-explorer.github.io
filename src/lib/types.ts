@@ -98,14 +98,3 @@ export interface SwarmscanEventsResponse {
   events: SwarmscanEvent[] | undefined
   next?: string
 }
-
-export interface BlockscoutLogEntry {
-  address: string
-  topics: string[]
-  data: string
-  blockNumber: string
-  timeStamp: string
-  logIndex: string
-  transactionHash: string
-  transactionIndex: string
-}

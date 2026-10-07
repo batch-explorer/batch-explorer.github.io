@@ -9,8 +9,6 @@ export const SWARMSCAN_API_BASE = 'https://api.swarmscan.io/v1'
 
 export const SWARMSCAN_STATS_URL = `${SWARMSCAN_API_BASE}/postage-stamps/stats`
 
-export const BLOCKSCOUT_API_URL = 'https://gnosis.blockscout.com/api'
-
 export const GNOSISSCAN_BASE_URL = 'https://gnosisscan.io'
 
 export const BATCH_ID_LENGTH = 64
@@ -31,6 +29,8 @@ export const BLOCKS_PER_MONTH = (30 * 24 * 3600 * 1000) / GNOSIS_BLOCK_TIME_MS /
 // keccak256("PriceUpdate(uint256)") — topic0 for getLogs filtering.
 export const PRICE_UPDATE_TOPIC =
   '0xae46785019700e30375a5d7b4f91e32f8060ef085111f896ebf889450aa2ab5a'
+
+export const POSTAGE_STAMP_DEPLOY_BLOCK = 31305656
 
 // First PriceUpdate event (contract deployed at block 31305656, 2023-12-06).
 // Used as the exact "All"-range start and the average-block-time baseline.
