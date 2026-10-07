@@ -2,21 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { publicClient } from '$lib/services/rpc-client'
-import { mapBlockscoutLog } from '$lib/services/swarmscan'
-import {
-  BLOCKSCOUT_API_URL,
-  FIRST_PRICE_BLOCK,
-  FIRST_PRICE_TIME_MS,
-  POSTAGE_STAMP_ADDRESS,
-  PRICE_UPDATE_TOPIC,
-} from '$lib/constants'
-import type { BlockscoutLogEntry, PostageEvent } from '$lib/types'
+import { fetchPostageLogs } from '$lib/services/event-fetcher'
+import { FIRST_PRICE_BLOCK, FIRST_PRICE_TIME_MS, PRICE_UPDATE_TOPIC } from '$lib/constants'
+import type { PostageEvent } from '$lib/types'
 
 const WINDOW_BLOCKS = 250 // ±250 blocks ≈ ±21 min; price events fire every ~13 min.
 const CONCURRENCY = 6
-const MAX_RETRIES = 4 // for Blockscout 429s
 
-// Primary rate limiter — lower this if Blockscout returns 429s, raise for speed.
+// Primary rate limiter — lower this if the RPC returns 429s, raise for speed.
 // At 10/s a ~150-request 1y run takes ~15s.
 const REQUESTS_PER_SECOND = 10
 const MIN_REQUEST_INTERVAL_MS = 1000 / REQUESTS_PER_SECOND
@@ -38,37 +31,15 @@ async function fetchWindow(
   toBlock: number,
   signal: AbortSignal,
 ): Promise<PostageEvent[]> {
-  const params = new URLSearchParams({
-    module: 'logs',
-    action: 'getLogs',
-    address: POSTAGE_STAMP_ADDRESS,
-    topic0: PRICE_UPDATE_TOPIC,
-    fromBlock: String(Math.max(0, fromBlock)),
-    toBlock: String(toBlock),
-  })
-  const url = `${BLOCKSCOUT_API_URL}?${params}`
-
-  // Retry on 429 with exponential backoff — also self-throttles under load.
-  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-    if (signal.aborted) return []
-    await throttle()
-    if (signal.aborted) return [] // superseded while queued
-    let response: Response
-    try {
-      response = await fetch(url, { signal })
-    } catch {
-      return [] // aborted or network error — drop this sample
-    }
-    if (response.status === 429) {
-      await sleep(300 * 2 ** attempt)
-      continue
-    }
-    if (!response.ok) return []
-    const data: { status: string; result: BlockscoutLogEntry[] | string } = await response.json()
-    if (data.status !== '1' || !Array.isArray(data.result)) return []
-    return data.result.map(mapBlockscoutLog)
+  if (signal.aborted) return []
+  await throttle()
+  if (signal.aborted) return [] // superseded while queued
+  try {
+    // viem's http transport already retries 429s/5xx with backoff.
+    return await fetchPostageLogs([PRICE_UPDATE_TOPIC], fromBlock, toBlock)
+  } catch {
+    return [] // network/RPC error — drop this sample
   }
-  return []
 }
 
 // Sample ~`samples` price points by reading a small block window at evenly-spaced
