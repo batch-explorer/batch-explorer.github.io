@@ -7,6 +7,9 @@ import { FIRST_PRICE_BLOCK, FIRST_PRICE_TIME_MS, PRICE_UPDATE_TOPIC } from '$lib
 import type { PostageEvent } from '$lib/types'
 
 const WINDOW_BLOCKS = 250 // ±250 blocks ≈ ±21 min; price events fire every ~13 min.
+// The final sample reads up to the chain head and takes the newest event, so the
+// series always ends on the current price. Wider, in case the oracle skips rounds.
+const HEAD_WINDOW_BLOCKS = 2000
 const CONCURRENCY = 6
 
 // Primary rate limiter — lower this if the RPC returns 429s, raise for speed.
@@ -28,7 +31,7 @@ async function throttle() {
 
 async function fetchWindow(
   fromBlock: number,
-  toBlock: number,
+  toBlock: number | undefined, // undefined = chain head
   signal: AbortSignal,
 ): Promise<PostageEvent[]> {
   if (signal.aborted) return []
@@ -80,9 +83,21 @@ export async function samplePrices(
     const batch = targets.slice(i, i + CONCURRENCY)
     const results = await Promise.all(
       batch.map(async (target) => {
-        const logs = await fetchWindow(target - WINDOW_BLOCKS, target + WINDOW_BLOCKS, signal)
+        // A range past the head is an RPC error, so the last sample is open-ended.
+        const atHead = target === targets[targets.length - 1]
+        const logs = atHead
+          ? await fetchWindow(target - HEAD_WINDOW_BLOCKS, undefined, signal)
+          : await fetchWindow(target - WINDOW_BLOCKS, target + WINDOW_BLOCKS, signal)
         onProgress?.(++done)
         if (logs.length === 0) return undefined
+        if (atHead) {
+          return logs.reduce((best, e) =>
+            e.blockNumber > best.blockNumber ||
+            (e.blockNumber === best.blockNumber && e.logIndex > best.logIndex)
+              ? e
+              : best,
+          )
+        }
         // event whose block is closest to the target position
         return logs.reduce((best, e) =>
           Math.abs(Number(e.blockNumber) - target) < Math.abs(Number(best.blockNumber) - target)

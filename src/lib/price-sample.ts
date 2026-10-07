@@ -14,7 +14,8 @@ function priceOf(e: PostageEvent): bigint {
 
 // Downsample a dense series to ~`buckets` evenly-spaced points across
 // [cutoff, now]: last (most recent) price per bucket, carried forward into
-// empty buckets so the line stays continuous.
+// empty buckets so the line stays continuous. Stops at the newest event's
+// bucket, so the series ends on the real current price, not a carried copy.
 export function bucketSeries(
   events: PostageEvent[],
   cutoff: Date,
@@ -39,9 +40,10 @@ export function bucketSeries(
     byBucket.set(idx, e) // ascending → last wins
   }
 
+  const lastBucket = Math.max(...byBucket.keys())
   const out: PricePoint[] = []
   let carried: bigint | undefined
-  for (let i = 0; i < buckets; i++) {
+  for (let i = 0; i <= lastBucket; i++) {
     const e = byBucket.get(i)
     if (e) {
       carried = priceOf(e)
@@ -76,5 +78,13 @@ if (import.meta.env.DEV) {
   console.assert(
     bucketSeries(runs, cutoff, now, 10).length <= 10,
     'bucketSeries should not exceed bucket count',
+  )
+  // newest event 25 min old → trailing buckets are empty and must not be filled
+  const newest = mk(7, 25)
+  const stale = bucketSeries([newest, mk(7, 35), mk(5, 55)], cutoff, now, 10)
+  console.assert(
+    stale[stale.length - 1].blockTime.getTime() === newest.blockTime!.getTime() &&
+      stale.filter((p) => p.price === 7n).length === 2,
+    'bucketSeries should end on the newest event without carried duplicates',
   )
 }
