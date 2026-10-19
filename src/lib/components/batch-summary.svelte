@@ -10,7 +10,7 @@
   import HexDisplay from '$lib/components/hex-display.svelte'
   import BlockBadge from '$lib/components/block-badge.svelte'
   import NumberDisplay from '$lib/components/number-display.svelte'
-  import { GNOSISSCAN_BASE_URL } from '$lib/constants'
+  import { GNOSISSCAN_BASE_URL, STAMPTIME_BASE_URL } from '$lib/constants'
   import { bzzPriceStore } from '$lib/stores/bzz-price.svelte'
   import type { BatchDetail } from '$lib/types'
   import { formatBzz, formatExpiry, formatStorageCapacity, formatUsd } from '$lib/format'
@@ -60,10 +60,18 @@
         {batch.immutableFlag ? 'Immutable' : 'Mutable'}
       </Badge>
       <a
-        href="{BEEPORT_TOPUP_URL}{batch.batchId.slice(2)}"
+        href="{STAMPTIME_BASE_URL}{batch.batchId.slice(2)}"
         target="_blank"
         rel="noopener noreferrer"
         class="ml-auto"
+        title="Days left, keepers and paid until, on Stamptime"
+      >
+        <Button variant="outline" size="sm">Time left</Button>
+      </a>
+      <a
+        href="{BEEPORT_TOPUP_URL}{batch.batchId.slice(2)}"
+        target="_blank"
+        rel="noopener noreferrer"
       >
         <Button variant="outline" size="sm">Top up</Button>
       </a>

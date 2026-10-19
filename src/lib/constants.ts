@@ -11,6 +11,9 @@ export const SWARMSCAN_STATS_URL = `${SWARMSCAN_API_BASE}/postage-stamps/stats`
 
 export const GNOSISSCAN_BASE_URL = 'https://gnosisscan.io'
 
+// Stamptime: the public page of one stamp (days left, who kept it alive, paid until). Takes the batch id without 0x.
+export const STAMPTIME_BASE_URL = 'https://stamptime.eth.limo/?id='
+
 export const BATCH_ID_LENGTH = 64
 
 export const TX_HASH_LENGTH = 66
